@@ -29,17 +29,11 @@ class Dist_Sequence(object):
 		self.tails+=1
 		return
 
-	def get_probs(self):
-		return self.probs
-
 	def get_dist(self,n):
 		return self.dist_list[n]
 
 	def get_last_dist(self):
 		return self.dist_list[len(self.dist_list)-1]
-
-	def get_num_dists(self):
-		return len(self.dist_list)
 
 #Define a polynomial, to be used as a prior, from a list of points.
 def define_prior(point_list,dist_seq):
@@ -50,7 +44,7 @@ def define_prior(point_list,dist_seq):
 	poly_coeff = numpy.linalg.solve(a,b)
 
 	#Initialize the distribution of p to the polynomial computed above.
-	prior_poly = [sum([c*x**j for j,c in enumerate(poly_coeff)]) for x in probs]
+	prior_poly = [sum([c*x**j for j,c in enumerate(poly_coeff)]) for x in dist_seq.probs]
 
 	#Check the prior can be scaled to a density curve (never lies below the axis), and normalize it.
 	neg = 0
@@ -58,14 +52,14 @@ def define_prior(point_list,dist_seq):
 		if x < 0:
 			neg = 1
 	if neg == 1:
-		p_dist = [1 for x in range(0,bins)]
+		p_dist = [1 for x in range(0,dist_seq.bins)]
 		print "Invalid Prior: Interpolated distribution isn't non-negative."
 	else:
-		dist_seq.add_prior(normalize(prior_poly))
+		dist_seq.add_prior(normalize(prior_poly,dist_seq.bins))
 	return
 
 #Normalize p_dist to a pmf while preserving proportions.
-def normalize(p_dist):
+def normalize(p_dist,bins):
 
 	#Sum the probabilties and divide each entry by the result.
 	totalweight = 0
@@ -85,12 +79,12 @@ def flip_heads(dist_seq):
 
 	#Calculate the total probability of flipping a head.
 	prob_h = 0
-	for i in range(0, bins):
-		prob_h += (1 / float(bins)) * i * prior[i]
+	for i in range(0, dist_seq.bins):
+		prob_h += (1 / float(dist_seq.bins)) * i * prior[i]
 
 	#Update the probability of each value of p using Bayes' rule.
-	for i in range(0, bins):
-		p_dist.append(((1 / float(bins)) * i * prior[i]) / prob_h)
+	for i in range(0, dist_seq.bins):
+		p_dist.append(((1 / float(dist_seq.bins)) * i * prior[i]) / prob_h)
 
 	dist_seq.add_heads_posterior(p_dist)
 	return
@@ -103,12 +97,12 @@ def flip_tails(dist_seq):
 
 	#Calculate the total probability of flipping a tail.
 	prob_t = 0
-	for i in range(0, bins):
-		prob_t += (1 / float(bins)) * (bins - i - 1) * prior[i]
+	for i in range(0, dist_seq.bins):
+		prob_t += (1 / float(dist_seq.bins)) * (dist_seq.bins - i - 1) * prior[i]
 
 	#Update the probability of each value of p using Bayes' rule.
-	for i in range(0,bins):
-		p_dist.append(((1 / float(bins)) * (bins - i - 1) * prior[i]) / prob_t)
+	for i in range(0,dist_seq.bins):
+		p_dist.append(((1 / float(dist_seq.bins)) * (dist_seq.bins - i - 1) * prior[i]) / prob_t)
 
 	dist_seq.add_tails_posterior(p_dist)
 	return
@@ -117,15 +111,15 @@ def flip_tails(dist_seq):
 def draw(dist_seq):
 
 	#Draw prior and intermediates in shades of grey (pehaps fifty of them?)
-	n = dist_seq.get_num_dists()-1
+	n = len(dist_seq.dist_list)-1
 	for i in range(0,n):	
-			plt.plot(dist_seq.get_probs(),dist_seq.get_dist(i),'-',color='grey',alpha=(i+1)/float(n+1))
+			plt.plot(dist_seq.probs,dist_seq.get_dist(i),'-',color='grey',alpha=(i+1)/float(n+1))
 
 	#Draw final posterior in red
-	plt.plot(dist_seq.get_probs(),dist_seq.get_last_dist(),'-',color='red')
+	plt.plot(dist_seq.probs,dist_seq.get_last_dist(),'-',color='red')
 
 	frame = plt.gca()
-	frame.set_title('Distribution of the Probability of Heads after ' + str(heads) + ' Heads and ' + str(tails) + ' Tails')
+	frame.set_title('Distribution of the Probability of Heads after ' + str(dist_seq.heads) + ' Heads and ' + str(dist_seq.tails) + ' Tails')
 	frame.axes.get_yaxis().set_ticks([])
 	plt.show()
 	return
