@@ -5,4 +5,6 @@ Visualization of Bayesian updating.
 
 - Input the results of several coin flips with H and T. When you're done flipping, enter D to draw the sequence of updated posteriors. The resulting distribution is shown in red, and the intermediates are shown in grey. The original prior has the lowest alpha.
 
-![Demo Run](https://github.com/brenderlogs/bayesian_coin_thing/blob/master/draw_demo.png)
+![Demo Run](draw_demo.png)
+
+Requires matplotlib and numpy. I run it using [Anaconda](http://continuum.io/downloads) on Windows, which comes with these packages installed. Just open the Python interpreter and type execfile('C:/path/to/coin_thing.py').
