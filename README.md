@@ -7,4 +7,6 @@ Visualization of Bayesian updating.
 
 ![Demo Run](draw_demo.png)
 
-Requires matplotlib and numpy. I run it using [Anaconda](http://continuum.io/downloads) on Windows, which comes with these packages installed. Just open the Python interpreter and type execfile('C:/path/to/coin_thing.py').
+## setup
+
+Requires matplotlib and numpy. I run it using [Anaconda](http://continuum.io/downloads) on Windows, which comes with these packages installed. Just open the Python interpreter and type `execfile('C:/path/to/coin_thing.py')`.
