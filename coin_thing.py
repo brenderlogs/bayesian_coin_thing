@@ -1,12 +1,11 @@
 #Calculation of the Posterior Distribution of the Bias of a Coin from a Polynomial Prior.
 #Brendan Cordy, 2014
 
-import matplotlib.pyplot as plt
-import numpy.linalg
+from matplotlib import pyplot
+from numpy.linalg import solve
 
 #An object to represent the history of priors/posteriors before/after each flip.
 class Dist_Sequence(object):
-	
 	def __init__(self,bins):
 		self.bins = bins
 		self.heads = 0
@@ -33,15 +32,14 @@ class Dist_Sequence(object):
 		return self.dist_list[n]
 
 	def get_last_dist(self):
-		return self.dist_list[len(self.dist_list)-1]
+		return self.dist_list[-1]
 
 #Define a polynomial, to be used as a prior, from a list of points.
 def define_prior(point_list,dist_seq):
-
 	#Determine the unique polynomial of degree len(point_list) through the points in point_list.
 	a = [[p[0]**n for n in range(0,len(point_list))] for p in point_list]
 	b = [p[1] for p in point_list]
-	poly_coeff = numpy.linalg.solve(a,b)
+	poly_coeff = solve(a,b)
 
 	#Initialize the distribution of p to the polynomial computed above.
 	prior_poly = [sum([c*x**j for j,c in enumerate(poly_coeff)]) for x in dist_seq.probs]
@@ -60,7 +58,6 @@ def define_prior(point_list,dist_seq):
 
 #Normalize p_dist to a pmf while preserving proportions.
 def normalize(p_dist,bins):
-
 	#Sum the probabilties and divide each entry by the result.
 	totalweight = 0
 	for r in range(0,bins):
@@ -73,7 +70,6 @@ def normalize(p_dist,bins):
 
 #Update after observing a head.
 def flip_heads(dist_seq):
-
 	prior = dist_seq.get_last_dist()
 	p_dist = []
 
@@ -91,7 +87,6 @@ def flip_heads(dist_seq):
 
 #Update after observing a tail.
 def flip_tails(dist_seq):
-
 	prior = dist_seq.get_last_dist()
 	p_dist = []
 
@@ -107,21 +102,23 @@ def flip_tails(dist_seq):
 	dist_seq.add_tails_posterior(p_dist)
 	return
 
-#Draw the current distribution of the probability of heads. 
+#Draw the current distribution of the probability of heads.
 def draw(dist_seq):
+	#Draw prior in black.
+	pyplot.plot(dist_seq.probs,dist_seq.get_dist(0),'--',color='black')
 
-	#Draw prior and intermediates in shades of grey (pehaps fifty of them?)
+	#Draw intermediates in shades of grey (pehaps fifty of them?).
 	n = len(dist_seq.dist_list)-1
-	for i in range(0,n):	
-			plt.plot(dist_seq.probs,dist_seq.get_dist(i),'-',color='grey',alpha=(i+1)/float(n+1))
+	for i in range(1,n):
+			pyplot.plot(dist_seq.probs,dist_seq.get_dist(i),'-',color='grey',alpha=(i+1)/float(n+1))
 
-	#Draw final posterior in red
-	plt.plot(dist_seq.probs,dist_seq.get_last_dist(),'-',color='red')
+	#Draw posterior in red.
+	pyplot.plot(dist_seq.probs,dist_seq.get_last_dist(),'-',color='red')
 
-	frame = plt.gca()
+	frame = pyplot.gca()
 	frame.set_title('Distribution of the Probability of Heads after ' + str(dist_seq.heads) + ' Heads and ' + str(dist_seq.tails) + ' Tails')
 	frame.axes.get_yaxis().set_ticks([])
-	plt.show()
+	pyplot.show()
 	return
 
 def main():
@@ -141,7 +138,7 @@ def main():
 		if(flip_result == 'T'):
 				flip_tails(dist_history)
 		flip_result = raw_input('Flip the coin (H for heads, T for tails, D for done): ')
-	
+
 	#Show the resulting sequence of distributions
 	draw(dist_history)
 
