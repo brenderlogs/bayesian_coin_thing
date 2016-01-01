@@ -5,8 +5,10 @@ Visualization of Bayesian updating.
 
 - Input the results of several coin flips with H and T. When you're done flipping, enter D to calculate and draw the updated distribution after every flip. The resulting posterior distribution, after observing the entire sequence of flips, is shown in red, and the prior is shown in dashed black. The intermediates are shown in grey, with increasing alpha as more evidence is considered.
 
+<p align="center">
 ![Demo Run](draw_demo.png)
+</p>
 
-## setup
+##
 
 Requires matplotlib and numpy. If you're new to python, just use a distribution like [Anaconda](http://continuum.io/downloads) that comes with these packages installed.
