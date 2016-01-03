@@ -11,4 +11,4 @@ Visualization of Bayesian updating.
 
 ##
 
-Requires matplotlib and numpy. If you're new to python, just use a distribution like [Anaconda](http://continuum.io/downloads) that comes with these packages installed.
+Requires matplotlib and numpy. If you're new to python, just use a distribution like [Anaconda](http://continuum.io/downloads) that comes with these packages installed. Fire it up and type `execfile('/path/to/coin_thing.py')`.
